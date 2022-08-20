@@ -133,7 +133,7 @@ def line_picker(line, mouseevent):
     which are the data points that were picked.
     """
     if mouseevent.xdata is None:
-        return False, dict()
+        return False, {}
     xdata = line.get_xdata()
     ydata = line.get_ydata()
     maxd = 0.05
@@ -147,7 +147,7 @@ def line_picker(line, mouseevent):
         props = dict(ind=ind, pickx=pickx, picky=picky)
         return True, props
     else:
-        return False, dict()
+        return False, {}
 
 
 def onpick2(event):

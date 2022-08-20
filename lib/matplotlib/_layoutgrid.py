@@ -53,7 +53,7 @@ class LayoutGrid:
         if width_ratios is None:
             self.width_ratios = np.ones(ncols)
 
-        sn = self.name + '_'
+        sn = f'{self.name}_'
         if not isinstance(parent, LayoutGrid):
             # parent can be a rect if not a LayoutGrid
             # allows specifying a rectangle to contain the layout.
@@ -372,12 +372,12 @@ class LayoutGrid:
         rows = np.atleast_1d(rows)
         cols = np.atleast_1d(cols)
 
-        bbox = Bbox.from_extents(
+        return Bbox.from_extents(
             self.lefts[cols[0]].value(),
             self.bottoms[rows[-1]].value(),
             self.rights[cols[-1]].value(),
-            self.tops[rows[0]].value())
-        return bbox
+            self.tops[rows[0]].value(),
+        )
 
     def get_inner_bbox(self, rows=0, cols=0):
         """
@@ -387,21 +387,28 @@ class LayoutGrid:
         rows = np.atleast_1d(rows)
         cols = np.atleast_1d(cols)
 
-        bbox = Bbox.from_extents(
-            (self.lefts[cols[0]].value() +
-                self.margins['left'][cols[0]].value() +
-                self.margins['leftcb'][cols[0]].value()),
-            (self.bottoms[rows[-1]].value() +
-                self.margins['bottom'][rows[-1]].value() +
-                self.margins['bottomcb'][rows[-1]].value()),
-            (self.rights[cols[-1]].value() -
-                self.margins['right'][cols[-1]].value() -
-                self.margins['rightcb'][cols[-1]].value()),
-            (self.tops[rows[0]].value() -
-                self.margins['top'][rows[0]].value() -
-                self.margins['topcb'][rows[0]].value())
+        return Bbox.from_extents(
+            (
+                self.lefts[cols[0]].value()
+                + self.margins['left'][cols[0]].value()
+                + self.margins['leftcb'][cols[0]].value()
+            ),
+            (
+                self.bottoms[rows[-1]].value()
+                + self.margins['bottom'][rows[-1]].value()
+                + self.margins['bottomcb'][rows[-1]].value()
+            ),
+            (
+                self.rights[cols[-1]].value()
+                - self.margins['right'][cols[-1]].value()
+                - self.margins['rightcb'][cols[-1]].value()
+            ),
+            (
+                self.tops[rows[0]].value()
+                - self.margins['top'][rows[0]].value()
+                - self.margins['topcb'][rows[0]].value()
+            ),
         )
-        return bbox
 
     def get_bbox_for_cb(self, rows=0, cols=0):
         """
@@ -411,17 +418,21 @@ class LayoutGrid:
         rows = np.atleast_1d(rows)
         cols = np.atleast_1d(cols)
 
-        bbox = Bbox.from_extents(
-            (self.lefts[cols[0]].value() +
-                self.margins['leftcb'][cols[0]].value()),
-            (self.bottoms[rows[-1]].value() +
-                self.margins['bottomcb'][rows[-1]].value()),
-            (self.rights[cols[-1]].value() -
-                self.margins['rightcb'][cols[-1]].value()),
-            (self.tops[rows[0]].value() -
-                self.margins['topcb'][rows[0]].value())
+        return Bbox.from_extents(
+            (
+                self.lefts[cols[0]].value()
+                + self.margins['leftcb'][cols[0]].value()
+            ),
+            (
+                self.bottoms[rows[-1]].value()
+                + self.margins['bottomcb'][rows[-1]].value()
+            ),
+            (
+                self.rights[cols[-1]].value()
+                - self.margins['rightcb'][cols[-1]].value()
+            ),
+            (self.tops[rows[0]].value() - self.margins['topcb'][rows[0]].value()),
         )
-        return bbox
 
     def get_left_margin_bbox(self, rows=0, cols=0):
         """
@@ -431,15 +442,19 @@ class LayoutGrid:
         rows = np.atleast_1d(rows)
         cols = np.atleast_1d(cols)
 
-        bbox = Bbox.from_extents(
-            (self.lefts[cols[0]].value() +
-                self.margins['leftcb'][cols[0]].value()),
+        return Bbox.from_extents(
+            (
+                self.lefts[cols[0]].value()
+                + self.margins['leftcb'][cols[0]].value()
+            ),
             (self.bottoms[rows[-1]].value()),
-            (self.lefts[cols[0]].value() +
-                self.margins['leftcb'][cols[0]].value() +
-                self.margins['left'][cols[0]].value()),
-            (self.tops[rows[0]].value()))
-        return bbox
+            (
+                self.lefts[cols[0]].value()
+                + self.margins['leftcb'][cols[0]].value()
+                + self.margins['left'][cols[0]].value()
+            ),
+            (self.tops[rows[0]].value()),
+        )
 
     def get_bottom_margin_bbox(self, rows=0, cols=0):
         """
@@ -449,16 +464,19 @@ class LayoutGrid:
         rows = np.atleast_1d(rows)
         cols = np.atleast_1d(cols)
 
-        bbox = Bbox.from_extents(
+        return Bbox.from_extents(
             (self.lefts[cols[0]].value()),
-            (self.bottoms[rows[-1]].value() +
-             self.margins['bottomcb'][rows[-1]].value()),
+            (
+                self.bottoms[rows[-1]].value()
+                + self.margins['bottomcb'][rows[-1]].value()
+            ),
             (self.rights[cols[-1]].value()),
-            (self.bottoms[rows[-1]].value() +
-                self.margins['bottom'][rows[-1]].value() +
-             self.margins['bottomcb'][rows[-1]].value()
-             ))
-        return bbox
+            (
+                self.bottoms[rows[-1]].value()
+                + self.margins['bottom'][rows[-1]].value()
+                + self.margins['bottomcb'][rows[-1]].value()
+            ),
+        )
 
     def get_right_margin_bbox(self, rows=0, cols=0):
         """
@@ -468,15 +486,19 @@ class LayoutGrid:
         rows = np.atleast_1d(rows)
         cols = np.atleast_1d(cols)
 
-        bbox = Bbox.from_extents(
-            (self.rights[cols[-1]].value() -
-                self.margins['right'][cols[-1]].value() -
-                self.margins['rightcb'][cols[-1]].value()),
+        return Bbox.from_extents(
+            (
+                self.rights[cols[-1]].value()
+                - self.margins['right'][cols[-1]].value()
+                - self.margins['rightcb'][cols[-1]].value()
+            ),
             (self.bottoms[rows[-1]].value()),
-            (self.rights[cols[-1]].value() -
-                self.margins['rightcb'][cols[-1]].value()),
-            (self.tops[rows[0]].value()))
-        return bbox
+            (
+                self.rights[cols[-1]].value()
+                - self.margins['rightcb'][cols[-1]].value()
+            ),
+            (self.tops[rows[0]].value()),
+        )
 
     def get_top_margin_bbox(self, rows=0, cols=0):
         """
@@ -486,15 +508,16 @@ class LayoutGrid:
         rows = np.atleast_1d(rows)
         cols = np.atleast_1d(cols)
 
-        bbox = Bbox.from_extents(
+        return Bbox.from_extents(
             (self.lefts[cols[0]].value()),
-            (self.tops[rows[0]].value() -
-                self.margins['topcb'][rows[0]].value()),
+            (self.tops[rows[0]].value() - self.margins['topcb'][rows[0]].value()),
             (self.rights[cols[-1]].value()),
-            (self.tops[rows[0]].value() -
-                self.margins['topcb'][rows[0]].value() -
-                self.margins['top'][rows[0]].value()))
-        return bbox
+            (
+                self.tops[rows[0]].value()
+                - self.margins['topcb'][rows[0]].value()
+                - self.margins['top'][rows[0]].value()
+            ),
+        )
 
     def update_variables(self):
         """

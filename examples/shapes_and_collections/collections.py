@@ -17,6 +17,7 @@ successively offset curves, with the offset given in data
 units.  This behavior is available only for the LineCollection.
 """
 
+
 import matplotlib.pyplot as plt
 from matplotlib import collections, colors, transforms
 import numpy as np
@@ -106,7 +107,7 @@ yy = np.linspace(0, 2*np.pi, nverts)
 ym = np.max(yy)
 xx = (0.2 + (ym - yy) / ym) ** 2 * np.cos(yy - 0.4) * 0.5
 segs = []
-for i in range(ncurves):
+for _ in range(ncurves):
     xxx = xx + 0.02*rs.randn(nverts)
     curve = np.column_stack([xxx, yy * 100])
     segs.append(curve)

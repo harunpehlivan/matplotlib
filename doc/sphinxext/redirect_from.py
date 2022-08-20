@@ -56,8 +56,7 @@ def setup(app):
     app.add_domain(RedirectFromDomain)
     app.connect("build-finished", _generate_redirects)
 
-    metadata = {'parallel_read_safe': True}
-    return metadata
+    return {'parallel_read_safe': True}
 
 
 class RedirectFromDomain(Domain):

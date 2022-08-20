@@ -108,7 +108,7 @@ for i, p in enumerate(wedges):
     y = np.sin(np.deg2rad(ang))
     x = np.cos(np.deg2rad(ang))
     horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
-    connectionstyle = "angle,angleA=0,angleB={}".format(ang)
+    connectionstyle = f"angle,angleA=0,angleB={ang}"
     kw["arrowprops"].update({"connectionstyle": connectionstyle})
     ax.annotate(recipe[i], xy=(x, y), xytext=(1.35*np.sign(x), 1.4*y),
                 horizontalalignment=horizontalalignment, **kw)

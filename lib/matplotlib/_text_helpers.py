@@ -14,9 +14,9 @@ LayoutItem = dataclasses.make_dataclass(
 
 def warn_on_missing_glyph(codepoint):
     _api.warn_external(
-        "Glyph {} ({}) missing from current font.".format(
-            codepoint,
-            chr(codepoint).encode("ascii", "namereplace").decode("ascii")))
+        f'Glyph {codepoint} ({chr(codepoint).encode("ascii", "namereplace").decode("ascii")}) missing from current font.'
+    )
+
     block = ("Hebrew" if 0x0590 <= codepoint <= 0x05ff else
              "Arabic" if 0x0600 <= codepoint <= 0x06ff else
              "Devanagari" if 0x0900 <= codepoint <= 0x097f else

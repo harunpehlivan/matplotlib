@@ -11,6 +11,7 @@ See :doc:`wire3d_animation_sgskip` for another example of animating a 3D plot.
 intentionally takes a long time to run)
 """
 
+
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
 
@@ -27,7 +28,7 @@ ax.set_ylabel('y')
 ax.set_zlabel('z')
 
 # Rotate the axes and update
-for angle in range(0, 360*4 + 1):
+for angle in range(360*4 + 1):
     # Normalize the angle to the range [-180, 180] for display
     angle_norm = (angle + 180) % 360 - 180
 

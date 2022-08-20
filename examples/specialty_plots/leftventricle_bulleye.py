@@ -99,7 +99,7 @@ def bullseye_plot(ax, data, seg_bold=None, cmap=None, norm=None):
             ax.plot(theta0[-1], [r[1], r[2]], '-k', lw=linewidth + 1)
 
     # Fill the segments 13-16
-    r0 = r[0:2]
+    r0 = r[:2]
     r0 = np.repeat(r0[:, np.newaxis], 192, axis=1).T
     for i in range(4):
         # First segment start at 45 degrees

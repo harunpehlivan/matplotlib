@@ -26,10 +26,7 @@ labels = list('abcdefghijklmnopqrstuvwxyz')
 
 
 def format_fn(tick_val, tick_pos):
-    if int(tick_val) in xs:
-        return labels[int(tick_val)]
-    else:
-        return ''
+    return labels[int(tick_val)] if int(tick_val) in xs else ''
 
 
 # A FuncFormatter is created automatically.

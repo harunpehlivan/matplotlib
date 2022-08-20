@@ -6,6 +6,7 @@ Colors in the default property cycle
 Display the colors from the default prop_cycle, which is obtained from the
 :doc:`rc parameters</tutorials/introductory/customizing>`.
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -19,10 +20,7 @@ thick = lwbase * 3
 
 fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True, sharey=True)
 for icol in range(2):
-    if icol == 0:
-        lwx, lwy = thin, lwbase
-    else:
-        lwx, lwy = lwbase, thick
+    lwx, lwy = (thin, lwbase) if icol == 0 else (lwbase, thick)
     for irow in range(2):
         for i, color in enumerate(colors):
             axs[irow, icol].axhline(i, color=color, lw=lwx)

@@ -11,6 +11,7 @@ The following also demonstrates how transparency of the markers
 can be adjusted by giving ``alpha`` a value between 0 and 1.
 """
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -18,8 +19,8 @@ np.random.seed(19680801)
 
 
 fig, ax = plt.subplots()
+n = 750
 for color in ['tab:blue', 'tab:orange', 'tab:green']:
-    n = 750
     x, y = np.random.rand(2, n)
     scale = 200.0 * np.random.rand(n)
     ax.scatter(x, y, c=color, s=scale, label=color,

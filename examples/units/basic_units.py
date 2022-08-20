@@ -38,8 +38,7 @@ class PassThroughProxy:
 
     def __call__(self, *args):
         fn = getattr(self.target, self.fn_name)
-        ret = fn(*args)
-        return ret
+        return fn(*args)
 
 
 class ConvertArgsProxy(PassThroughProxy):
@@ -54,7 +53,7 @@ class ConvertArgsProxy(PassThroughProxy):
                 converted_args.append(a.convert_to(self.unit))
             except AttributeError:
                 converted_args.append(TaggedValue(a, self.unit))
-        converted_args = tuple([c.get_value() for c in converted_args])
+        converted_args = tuple(c.get_value() for c in converted_args)
         return super().__call__(*converted_args)
 
 
@@ -153,7 +152,7 @@ class TaggedValue(metaclass=TaggedValueMeta):
         return 'TaggedValue({!r}, {!r})'.format(self.value, self.unit)
 
     def __str__(self):
-        return str(self.value) + ' in ' + str(self.unit)
+        return f'{str(self.value)} in {str(self.unit)}'
 
     def __len__(self):
         return len(self.value)
@@ -194,7 +193,7 @@ class BasicUnit:
         if fullname is None:
             fullname = name
         self.fullname = fullname
-        self.conversions = dict()
+        self.conversions = {}
 
     def __repr__(self):
         return f'BasicUnit({self.name})'
@@ -212,9 +211,7 @@ class BasicUnit:
             value = rhs.get_value()
             unit = rhs.get_unit()
             unit = unit_resolver('__mul__', (self, unit))
-        if unit is NotImplemented:
-            return NotImplemented
-        return TaggedValue(value, unit)
+        return NotImplemented if unit is NotImplemented else TaggedValue(value, unit)
 
     def __rmul__(self, lhs):
         return self*lhs
@@ -224,10 +221,7 @@ class BasicUnit:
 
     def __array__(self, t=None, context=None):
         ret = np.array(1)
-        if t is not None:
-            return ret.astype(t)
-        else:
-            return ret
+        return ret.astype(t) if t is not None else ret
 
     def add_conversion_factor(self, unit, factor):
         def convert(x):
@@ -242,8 +236,7 @@ class BasicUnit:
 
     def convert_value_to(self, value, unit):
         conversion_fn = self.conversions[unit]
-        ret = conversion_fn(value)
-        return ret
+        return conversion_fn(value)
 
     def get_unit(self):
         return self
@@ -251,16 +244,18 @@ class BasicUnit:
 
 class UnitResolver:
     def addition_rule(self, units):
-        for unit_1, unit_2 in zip(units[:-1], units[1:]):
-            if unit_1 != unit_2:
-                return NotImplemented
-        return units[0]
+        return next(
+            (
+                NotImplemented
+                for unit_1, unit_2 in zip(units[:-1], units[1:])
+                if unit_1 != unit_2
+            ),
+            units[0],
+        )
 
     def multiplication_rule(self, units):
         non_null = [u for u in units if u]
-        if len(non_null) > 1:
-            return NotImplemented
-        return non_null[0]
+        return NotImplemented if len(non_null) > 1 else non_null[0]
 
     op_dict = {
         '__mul__': multiplication_rule,
@@ -299,11 +294,7 @@ secs.add_conversion_factor(minutes, 1/60.0)
 
 # radians formatting
 def rad_fn(x, pos=None):
-    if x >= 0:
-        n = int((x / np.pi) * 2.0 + 0.25)
-    else:
-        n = int((x / np.pi) * 2.0 - 0.25)
-
+    n = int((x / np.pi) * 2.0 + 0.25) if x >= 0 else int((x / np.pi) * 2.0 - 0.25)
     if n == 0:
         return '0'
     elif n == 1:
@@ -346,23 +337,20 @@ class BasicUnitConverter(units.ConversionInterface):
 
     @staticmethod
     def convert(val, unit, axis):
-        if np.iterable(val):
-            if isinstance(val, np.ma.MaskedArray):
-                val = val.astype(float).filled(np.nan)
-            out = np.empty(len(val))
-            for i, thisval in enumerate(val):
-                if np.ma.is_masked(thisval):
-                    out[i] = np.nan
-                else:
-                    try:
-                        out[i] = thisval.convert_to(unit).get_value()
-                    except AttributeError:
-                        out[i] = thisval
-            return out
-        if np.ma.is_masked(val):
-            return np.nan
-        else:
-            return val.convert_to(unit).get_value()
+        if not np.iterable(val):
+            return np.nan if np.ma.is_masked(val) else val.convert_to(unit).get_value()
+        if isinstance(val, np.ma.MaskedArray):
+            val = val.astype(float).filled(np.nan)
+        out = np.empty(len(val))
+        for i, thisval in enumerate(val):
+            if np.ma.is_masked(thisval):
+                out[i] = np.nan
+            else:
+                try:
+                    out[i] = thisval.convert_to(unit).get_value()
+                except AttributeError:
+                    out[i] = thisval
+        return out
 
     @staticmethod
     def default_units(x, axis):

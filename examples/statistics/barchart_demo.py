@@ -31,9 +31,7 @@ def to_ordinal(num):
                                        'th', 'th', 'th', 'th', 'th'])}
     v = str(num)
     # special case early teens
-    if v in {'11', '12', '13'}:
-        return v + 'th'
-    return v + suffixes[v[-1]]
+    return f'{v}th' if v in {'11', '12', '13'} else v + suffixes[v[-1]]
 
 
 def format_score(score):

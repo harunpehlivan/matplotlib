@@ -31,7 +31,7 @@ class FooConverter(units.ConversionInterface):
     @staticmethod
     def axisinfo(unit, axis):
         """Return the Foo AxisInfo."""
-        if unit == 1.0 or unit == 2.0:
+        if unit in [1.0, 2.0]:
             return units.AxisInfo(
                 majloc=ticker.IndexLocator(8, 0),
                 majfmt=ticker.FormatStrFormatter("VAL: %s"),
@@ -48,19 +48,15 @@ class FooConverter(units.ConversionInterface):
 
         If *obj* is a sequence, return the converted sequence.
         """
-        if np.iterable(obj):
-            return [o.value(unit) for o in obj]
-        else:
-            return obj.value(unit)
+        return [o.value(unit) for o in obj] if np.iterable(obj) else obj.value(unit)
 
     @staticmethod
     def default_units(x, axis):
         """Return the default unit for *x* or None."""
-        if np.iterable(x):
-            for thisx in x:
-                return thisx.unit
-        else:
+        if not np.iterable(x):
             return x.unit
+        for thisx in x:
+            return thisx.unit
 
 
 units.registry[Foo] = FooConverter()
@@ -68,7 +64,7 @@ units.registry[Foo] = FooConverter()
 # create some Foos
 x = [Foo(val, 1.0) for val in range(0, 50, 2)]
 # and some arbitrary y data
-y = [i for i in range(len(x))]
+y = list(range(len(x)))
 
 fig, (ax1, ax2) = plt.subplots(1, 2)
 fig.suptitle("Custom units")

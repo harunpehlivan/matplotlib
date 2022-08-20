@@ -194,11 +194,9 @@ def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
     else:
         threshold = im.norm(data.max())/2.
 
-    # Set default alignment to center, but allow it to be
-    # overwritten by textkw.
-    kw = dict(horizontalalignment="center",
-              verticalalignment="center")
-    kw.update(textkw)
+    kw = (
+        dict(horizontalalignment="center", verticalalignment="center") | textkw
+    )
 
     # Get the formatter in case a string is supplied
     if isinstance(valfmt, str):
@@ -252,8 +250,8 @@ annotate_heatmap(im, valfmt="{x:.1f}", size=7)
 # use an integer format on the annotations and provide some colors.
 
 data = np.random.randint(2, 100, size=(7, 7))
-y = ["Book {}".format(i) for i in range(1, 8)]
-x = ["Store {}".format(i) for i in list("ABCDEFG")]
+y = [f"Book {i}" for i in range(1, 8)]
+x = [f"Store {i}" for i in list("ABCDEFG")]
 im, _ = heatmap(data, y, x, ax=ax2, vmin=0,
                 cmap="magma_r", cbarlabel="weekly sold copies")
 annotate_heatmap(im, valfmt="{x:d}", size=7, threshold=20,
@@ -265,8 +263,8 @@ annotate_heatmap(im, valfmt="{x:d}", size=7, threshold=20,
 # labels from an array of classes.
 
 data = np.random.randn(6, 6)
-y = ["Prod. {}".format(i) for i in range(10, 70, 10)]
-x = ["Cycle {}".format(i) for i in range(1, 7)]
+y = [f"Prod. {i}" for i in range(10, 70, 10)]
+x = [f"Cycle {i}" for i in range(1, 7)]
 
 qrates = list("ABCDEFG")
 norm = matplotlib.colors.BoundaryNorm(np.linspace(-3.5, 3.5, 8), 7)

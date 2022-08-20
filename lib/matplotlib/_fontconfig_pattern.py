@@ -5,6 +5,7 @@ A module for parsing and generating `fontconfig patterns`_.
    https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
 """
 
+
 # This class logically belongs in `matplotlib.font_manager`, but placing it
 # there would have created cyclical dependency problems, because it also needs
 # to be available from `matplotlib.rcsetup` (for parsing matplotlibrc files).
@@ -17,11 +18,11 @@ from pyparsing import (Literal, ZeroOrMore, Optional, Regex, StringEnd,
 
 family_punc = r'\\\-:,'
 family_unescape = re.compile(r'\\([%s])' % family_punc).sub
-family_escape = re.compile(r'([%s])' % family_punc).sub
+family_escape = re.compile(f'([{family_punc}])').sub
 
 value_punc = r'\\=_:,'
 value_unescape = re.compile(r'\\([%s])' % value_punc).sub
-value_escape = re.compile(r'([%s])' % value_punc).sub
+value_escape = re.compile(f'([{value_punc}])').sub
 
 
 class FontconfigPatternParser:
@@ -201,9 +202,9 @@ def generate_fontconfig_pattern(d):
 
     # The other keys are added as key=value
     for key in ['style', 'variant', 'weight', 'stretch', 'file', 'size']:
-        val = getattr(d, 'get_' + key)()
+        val = getattr(d, f'get_{key}')()
         # Don't use 'if not val' because 0 is a valid input.
         if val is not None and val != []:
-            props.append(":%s=%s" % (key, _escape_val(val, value_escape)))
+            props.append(f":{key}={_escape_val(val, value_escape)}")
 
     return ''.join(props)

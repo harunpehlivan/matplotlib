@@ -95,6 +95,7 @@ the interpolation is between ``y1[i]`` and ``y0[i+1]``.  So, ``y0[0]`` and
 ``y1[-1]`` are never used.
 
 """
+
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -122,7 +123,7 @@ for n_bin, ax in zip(n_bins, axs.flat):
     cmap = LinearSegmentedColormap.from_list(cmap_name, colors, N=n_bin)
     # Fewer bins will result in "coarser" colomap interpolation
     im = ax.imshow(Z, origin='lower', cmap=cmap)
-    ax.set_title("N bins: %s" % n_bin)
+    ax.set_title(f"N bins: {n_bin}")
     fig.colorbar(im, ax=ax)
 
 

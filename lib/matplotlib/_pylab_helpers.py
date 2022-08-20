@@ -119,8 +119,7 @@ class Gcf:
                 "button_press_event", lambda event: cls.set_active(manager))
         fig = manager.canvas.figure
         fig.number = manager.num
-        label = fig.get_label()
-        if label:
+        if label := fig.get_label():
             manager.set_window_title(label)
         cls.set_active(manager)
 

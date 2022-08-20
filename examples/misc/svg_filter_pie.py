@@ -10,6 +10,7 @@ Note that the filtering effects are only effective if your SVG renderer
 support it.
 """
 
+
 import io
 import xml.etree.ElementTree as ET
 
@@ -39,7 +40,7 @@ for w in pies[0]:
 for w in pies[0]:
     # create shadow patch
     s = Shadow(w, -0.01, -0.01)
-    s.set_gid(w.get_gid() + "_shadow")
+    s.set_gid(f"{w.get_gid()}_shadow")
     s.set_zorder(w.get_zorder() - 0.1)
     ax.add_patch(s)
 
@@ -85,11 +86,11 @@ tree, xmlid = ET.XMLID(f.getvalue())
 # insert the filter definition in the svg dom tree.
 tree.insert(0, ET.XML(filter_def))
 
-for i, pie_name in enumerate(labels):
+for pie_name in labels:
     pie = xmlid[pie_name]
     pie.set("filter", 'url(#MyFilter)')
 
-    shadow = xmlid[pie_name + "_shadow"]
+    shadow = xmlid[f"{pie_name}_shadow"]
     shadow.set("filter", 'url(#dropshadow)')
 
 fn = "svg_filter_pie.svg"

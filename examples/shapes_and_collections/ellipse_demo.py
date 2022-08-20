@@ -7,6 +7,7 @@ Draw many ellipses. Here individual ellipses are drawn. Compare this
 to the :doc:`Ellipse collection example
 </gallery/shapes_and_collections/ellipse_collection>`.
 """
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Ellipse
@@ -17,10 +18,16 @@ np.random.seed(19680801)
 
 NUM = 250
 
-ells = [Ellipse(xy=np.random.rand(2) * 10,
-                width=np.random.rand(), height=np.random.rand(),
-                angle=np.random.rand() * 360)
-        for i in range(NUM)]
+ells = [
+    Ellipse(
+        xy=np.random.rand(2) * 10,
+        width=np.random.rand(),
+        height=np.random.rand(),
+        angle=np.random.rand() * 360,
+    )
+    for _ in range(NUM)
+]
+
 
 fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
 for e in ells:

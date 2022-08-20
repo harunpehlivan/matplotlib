@@ -160,8 +160,7 @@ def make_layoutgrids(fig, layoutgrids, rect=(0, 0, 1, 1)):
     """
 
     if layoutgrids is None:
-        layoutgrids = dict()
-        layoutgrids['hasgrids'] = False
+        layoutgrids = {'hasgrids': False}
     if not hasattr(fig, '_parent'):
         # top figure;  pass rect as parent to allow user-specified
         # margins
@@ -397,9 +396,8 @@ def make_layout_margins(layoutgrids, fig, renderer, *, w_pad=0, h_pad=0,
             elif loc == 'top':
                 if cbp_rspan.start == ss.rowspan.start:
                     margin['topcb'] += cbbbox.height + pad
-            else:
-                if cbp_rspan.stop == ss.rowspan.stop:
-                    margin['bottomcb'] += cbbbox.height + pad
+            elif cbp_rspan.stop == ss.rowspan.stop:
+                margin['bottomcb'] += cbbbox.height + pad
             # If the colorbars are wider than the parent box in the
             # cross direction
             if loc in ['top', 'bottom']:
@@ -541,16 +539,15 @@ def match_submerged_margins(layoutgrids, fig):
             for ax2 in axs:
                 ss2 = ax2.get_subplotspec()
                 lg2 = layoutgrids[ss2.get_gridspec()]
-                if lg2 is not None:
-                    if len(ss2.rowspan) > 1:
-                        maxsubt = np.max([np.max(
-                            lg2.margin_vals['top'][ss2.rowspan[1:]] +
-                            lg2.margin_vals['topcb'][ss2.rowspan[1:]]
-                        ), maxsubt])
-                        maxsubb = np.max([np.max(
-                            lg2.margin_vals['bottom'][ss2.rowspan[:-1]] +
-                            lg2.margin_vals['bottomcb'][ss2.rowspan[:-1]]
-                        ), maxsubb])
+                if lg2 is not None and len(ss2.rowspan) > 1:
+                    maxsubt = np.max([np.max(
+                        lg2.margin_vals['top'][ss2.rowspan[1:]] +
+                        lg2.margin_vals['topcb'][ss2.rowspan[1:]]
+                    ), maxsubt])
+                    maxsubb = np.max([np.max(
+                        lg2.margin_vals['bottom'][ss2.rowspan[:-1]] +
+                        lg2.margin_vals['bottomcb'][ss2.rowspan[:-1]]
+                    ), maxsubb])
             for i in ss1.rowspan[1:]:
                 lg1.edit_margin_min('top', maxsubt, cell=i)
             for i in ss1.rowspan[:-1]:
@@ -641,7 +638,7 @@ def reposition_axes(layoutgrids, fig, renderer, *,
         # we need to keep track of oldw and oldh if there is more than
         # one colorbar:
         offset = {'left': 0, 'right': 0, 'bottom': 0, 'top': 0}
-        for nn, cbax in enumerate(ax._colorbars[::-1]):
+        for cbax in ax._colorbars[::-1]:
             if ax == cbax._colorbar_info['parents'][0]:
                 reposition_colorbar(layoutgrids, cbax, renderer,
                                     offset=offset)
@@ -692,35 +689,30 @@ def reposition_colorbar(layoutgrids, cbax, renderer, *, offset=None):
     if location in ('left', 'right'):
         # fraction and shrink are fractions of parent
         pbcb = pb.shrunk(fraction, shrink).anchored(anchor, pb)
+        lmargin = cbpos.x0 - cbbbox.x0
         # The colorbar is at the left side of the parent.  Need
         # to translate to right (or left)
         if location == 'right':
-            lmargin = cbpos.x0 - cbbbox.x0
             dx = bboxparent.x1 - pbcb.x0 + offset['right']
             dx += cbpad + lmargin
             offset['right'] += cbbbox.width + cbpad
-            pbcb = pbcb.translated(dx, 0)
         else:
-            lmargin = cbpos.x0 - cbbbox.x0
             dx = bboxparent.x0 - pbcb.x0  # edge of parent
             dx += -cbbbox.width - cbpad + lmargin - offset['left']
             offset['left'] += cbbbox.width + cbpad
-            pbcb = pbcb.translated(dx, 0)
+        pbcb = pbcb.translated(dx, 0)
     else:  # horizontal axes:
         pbcb = pb.shrunk(shrink, fraction).anchored(anchor, pb)
+        bmargin = cbpos.y0 - cbbbox.y0
         if location == 'top':
-            bmargin = cbpos.y0 - cbbbox.y0
             dy = bboxparent.y1 - pbcb.y0 + offset['top']
             dy += cbpad + bmargin
             offset['top'] += cbbbox.height + cbpad
-            pbcb = pbcb.translated(0, dy)
         else:
-            bmargin = cbpos.y0 - cbbbox.y0
             dy = bboxparent.y0 - pbcb.y0
             dy += -cbbbox.height - cbpad + bmargin - offset['bottom']
             offset['bottom'] += cbbbox.height + cbpad
-            pbcb = pbcb.translated(0, dy)
-
+        pbcb = pbcb.translated(0, dy)
     pbcb = trans_fig_to_subfig.transform_bbox(pbcb)
     cbax.set_transform(fig.transSubfigure)
     cbax._set_position(pbcb)

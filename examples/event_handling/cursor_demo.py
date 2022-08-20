@@ -48,17 +48,16 @@ class Cursor:
         return need_redraw
 
     def on_mouse_move(self, event):
-        if not event.inaxes:
-            need_redraw = self.set_cross_hair_visible(False)
-            if need_redraw:
-                self.ax.figure.canvas.draw()
-        else:
+        if event.inaxes:
             self.set_cross_hair_visible(True)
             x, y = event.xdata, event.ydata
             # update the line positions
             self.horizontal_line.set_ydata(y)
             self.vertical_line.set_xdata(x)
             self.text.set_text('x=%1.2f, y=%1.2f' % (x, y))
+            self.ax.figure.canvas.draw()
+
+        elif need_redraw := self.set_cross_hair_visible(False):
             self.ax.figure.canvas.draw()
 
 
@@ -123,12 +122,7 @@ class BlittedCursor:
     def on_mouse_move(self, event):
         if self.background is None:
             self.create_new_background()
-        if not event.inaxes:
-            need_redraw = self.set_cross_hair_visible(False)
-            if need_redraw:
-                self.ax.figure.canvas.restore_region(self.background)
-                self.ax.figure.canvas.blit(self.ax.bbox)
-        else:
+        if event.inaxes:
             self.set_cross_hair_visible(True)
             # update the line positions
             x, y = event.xdata, event.ydata
@@ -140,6 +134,10 @@ class BlittedCursor:
             self.ax.draw_artist(self.horizontal_line)
             self.ax.draw_artist(self.vertical_line)
             self.ax.draw_artist(self.text)
+            self.ax.figure.canvas.blit(self.ax.bbox)
+
+        elif need_redraw := self.set_cross_hair_visible(False):
+            self.ax.figure.canvas.restore_region(self.background)
             self.ax.figure.canvas.blit(self.ax.bbox)
 
 
@@ -191,8 +189,7 @@ class SnappingCursor:
     def on_mouse_move(self, event):
         if not event.inaxes:
             self._last_index = None
-            need_redraw = self.set_cross_hair_visible(False)
-            if need_redraw:
+            if need_redraw := self.set_cross_hair_visible(False):
                 self.ax.figure.canvas.draw()
         else:
             self.set_cross_hair_visible(True)

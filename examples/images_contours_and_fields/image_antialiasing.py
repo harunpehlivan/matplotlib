@@ -25,6 +25,7 @@ Other anti-aliasing filters can be specified in `.Axes.imshow` using the
 *interpolation* keyword argument.
 """
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -42,9 +43,9 @@ f0 = 5
 k = 100
 a = np.sin(np.pi * 2 * (f0 * R + k * R**2 / 2))
 # make the left hand side of this
-a[:int(N / 2), :][R[:int(N / 2), :] < 0.4] = -1
-a[:int(N / 2), :][R[:int(N / 2), :] < 0.3] = 1
-aa[:, int(N / 3):] = a[:, int(N / 3):]
+a[:N // 2, :][R[:N // 2, :] < 0.4] = -1
+a[:N // 2, :][R[:N // 2, :] < 0.3] = 1
+aa[:, N // 3:] = a[:, N // 3:]
 a = aa
 ###############################################################################
 # The following images are subsampled from 450 data pixels to either

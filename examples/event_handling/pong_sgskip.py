@@ -54,7 +54,7 @@ class Pad:
         if type == 'r':
             self.xoffset *= -1.0
 
-        if type == 'l' or type == 'r':
+        if type in ['l', 'r']:
             self.signx = -1.0
             self.signy = 1.0
         else:
@@ -74,10 +74,7 @@ class Puck:
 
     def _reset(self, pad):
         self.x = pad.x + pad.xoffset
-        if pad.y < 0:
-            self.y = pad.y + pad.yoffset
-        else:
-            self.y = pad.y - pad.yoffset
+        self.y = pad.y + pad.yoffset if pad.y < 0 else pad.y - pad.yoffset
         self.vx = pad.x - self.x
         self.vy = pad.y + pad.w/2 - self.y
         self._speedlimit()
@@ -137,10 +134,8 @@ class Game:
         ax.yaxis.set_visible(False)
         ax.set_ylim([-1, 1])
         pad_a_x = 0
-        pad_b_x = .50
         pad_a_y = pad_b_y = .30
-        pad_b_x += 6.3
-
+        pad_b_x = .50 + 6.3
         # pads
         pA, = self.ax.barh(pad_a_y, .2,
                            height=.3, color='k', alpha=.5, edgecolor='b',
@@ -220,10 +215,8 @@ class Game:
             for puck in self.pucks:
                 if puck.update(self.pads):
                     # we only get here if someone scored
-                    self.pads[0].disp.set_label(
-                        "   " + str(self.pads[0].score))
-                    self.pads[1].disp.set_label(
-                        "   " + str(self.pads[1].score))
+                    self.pads[0].disp.set_label(f"   {str(self.pads[0].score)}")
+                    self.pads[1].disp.set_label(f"   {str(self.pads[1].score)}")
                     self.ax.legend(loc='center', framealpha=.2,
                                    facecolor='0.5',
                                    prop=FontProperties(size='xx-large',
@@ -248,27 +241,21 @@ class Game:
     def on_key_press(self, event):
         if event.key == '3':
             self.res *= 5.0
-        if event.key == '4':
+        elif event.key == '4':
             self.res /= 5.0
 
-        if event.key == 'e':
-            self.pads[0].y += .1
-            if self.pads[0].y > 1 - .3:
-                self.pads[0].y = 1 - .3
-        if event.key == 'd':
+        elif event.key == 'd':
             self.pads[0].y -= .1
-            if self.pads[0].y < -1:
-                self.pads[0].y = -1
-
-        if event.key == 'i':
+            self.pads[0].y = max(self.pads[0].y, -1)
+        elif event.key == 'e':
+            self.pads[0].y += .1
+            self.pads[0].y = min(self.pads[0].y, 1 - .3)
+        elif event.key == 'i':
             self.pads[1].y += .1
-            if self.pads[1].y > 1 - .3:
-                self.pads[1].y = 1 - .3
-        if event.key == 'k':
+            self.pads[1].y = min(self.pads[1].y, 1 - .3)
+        elif event.key == 'k':
             self.pads[1].y -= .1
-            if self.pads[1].y < -1:
-                self.pads[1].y = -1
-
+            self.pads[1].y = max(self.pads[1].y, -1)
         if event.key == 'a':
             self.pucks.append(Puck(self.puckdisp,
                                    self.pads[randint(2)],
@@ -284,11 +271,11 @@ class Game:
             for p in self.pucks:
                 p._faster()
 
-        if event.key == 'n':
-            self.distract = not self.distract
-
         if event.key == 'g':
             self.on = not self.on
+        elif event.key == 'n':
+            self.distract = not self.distract
+
         if event.key == 't':
             self.inst = not self.inst
             self.i.set_visible(not self.i.get_visible())

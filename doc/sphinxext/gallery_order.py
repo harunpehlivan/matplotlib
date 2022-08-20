@@ -39,7 +39,7 @@ class MplExplicitOrder(ExplicitOrder):
             return "{:04d}".format(self.ordered_list.index(item))
         else:
             # ensure not explicitly listed items come last.
-            return "zzz" + item
+            return f"zzz{item}"
 
 
 # Subsection order:
@@ -78,7 +78,7 @@ list_all = [
     # Unstructured
     "tricontour", "tricontourf", "tripcolor", "triplot",
     ]
-explicit_subsection_order = [item + ".py" for item in list_all]
+explicit_subsection_order = [f"{item}.py" for item in list_all]
 
 
 class MplExplicitSubOrder:
@@ -93,7 +93,7 @@ class MplExplicitSubOrder:
             return "{:04d}".format(self.ordered_list.index(item))
         else:
             # ensure not explicitly listed items come last.
-            return "zzz" + item
+            return f"zzz{item}"
 
 
 # Provide the above classes for use in conf.py

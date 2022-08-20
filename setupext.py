@@ -130,7 +130,7 @@ def get_and_extract_tarball(urls, sha, dirname):
                 f"Failed to download any of the following: {urls}.  "
                 f"Please download one of these urls and extract it into "
                 f"'build/' at the top-level of the source repository.")
-        print("Extracting {}".format(urllib.parse.urlparse(url).path))
+        print(f"Extracting {urllib.parse.urlparse(url).path}")
         with tarfile.open(fileobj=tar_contents, mode="r:gz") as tgz:
             if os.path.commonpath(tgz.getnames()) != dirname:
                 raise IOError(
@@ -239,7 +239,7 @@ def get_pkg_config():
     if pkg_config_path is not None:
         pkg_config_path = os.path.join(pkg_config_path, 'pkgconfig')
         try:
-            os.environ['PKG_CONFIG_PATH'] += ':' + pkg_config_path
+            os.environ['PKG_CONFIG_PATH'] += f':{pkg_config_path}'
         except KeyError:
             os.environ['PKG_CONFIG_PATH'] = pkg_config_path
     return pkg_config
@@ -577,10 +577,7 @@ class FreeType(SetupPackage):
             # Statically link to the locally-built freetype.
             # This is certainly broken on Windows.
             ext.include_dirs.insert(0, str(src_path / 'include'))
-            if sys.platform == 'win32':
-                libfreetype = 'libfreetype.lib'
-            else:
-                libfreetype = 'libfreetype.a'
+            libfreetype = 'libfreetype.lib' if sys.platform == 'win32' else 'libfreetype.a'
             ext.extra_objects.insert(
                 0, str(src_path / 'objs' / '.libs' / libfreetype))
             ext.define_macros.append(('FREETYPE_BUILD_TYPE', 'local'))
@@ -604,10 +601,7 @@ class FreeType(SetupPackage):
             dirname=f'freetype-{LOCAL_FREETYPE_VERSION}',
         )
 
-        if sys.platform == 'win32':
-            libfreetype = 'libfreetype.lib'
-        else:
-            libfreetype = 'libfreetype.a'
+        libfreetype = 'libfreetype.lib' if sys.platform == 'win32' else 'libfreetype.a'
         if (src_path / 'objs' / '.libs' / libfreetype).is_file():
             return  # Bail out because we have already built FreeType.
 
@@ -649,10 +643,7 @@ class FreeType(SetupPackage):
                                                      stderr=subprocess.DEVNULL)
                 except subprocess.CalledProcessError:
                     output = b''
-                if b'GNU' not in output and b'makepp' not in output:
-                    make = 'gmake'
-                else:
-                    make = 'make'
+                make = 'gmake' if b'GNU' not in output and b'makepp' not in output else 'make'
             subprocess.check_call([make], env=env, cwd=src_path)
         else:  # compilation on windows
             shutil.rmtree(src_path / "objs", ignore_errors=True)

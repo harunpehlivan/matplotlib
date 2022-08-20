@@ -79,10 +79,7 @@ def _to_list_of_floats(s):
 
 
 def _to_bool(s):
-    if s.lower().strip() in (b'false', b'0', b'no'):
-        return False
-    else:
-        return True
+    return s.lower().strip() not in (b'false', b'0', b'no')
 
 
 def _parse_header(fh):
@@ -147,10 +144,7 @@ def _parse_header(fh):
             if key != b'StartFontMetrics':
                 raise RuntimeError('Not an AFM file')
             first_line = False
-        if len(lst) == 2:
-            val = lst[1]
-        else:
-            val = b''
+        val = lst[1] if len(lst) == 2 else b''
         try:
             converter = header_converters[key]
         except KeyError:
@@ -217,7 +211,7 @@ def _parse_char_metrics(fh):
         vals = dict(s.strip().split(' ', 1) for s in line.split(';') if s)
         # There may be other metrics present, but only these are needed
         if not required_keys.issubset(vals):
-            raise RuntimeError('Bad char metrics line: %s' % line)
+            raise RuntimeError(f'Bad char metrics line: {line}')
         num = _to_int(vals['C'])
         wx = _to_float(vals['WX'])
         name = vals['N']
@@ -251,7 +245,7 @@ def _parse_kern_pairs(fh):
 
     line = next(fh)
     if not line.startswith(b'StartKernPairs'):
-        raise RuntimeError('Bad start of kern pairs data: %s' % line)
+        raise RuntimeError(f'Bad start of kern pairs data: {line}')
 
     d = {}
     for line in fh:
@@ -263,7 +257,7 @@ def _parse_kern_pairs(fh):
             return d
         vals = line.split()
         if len(vals) != 4 or vals[0] != b'KPX':
-            raise RuntimeError('Bad kern pairs line: %s' % line)
+            raise RuntimeError(f'Bad kern pairs line: {line}')
         c1, c2, val = _to_str(vals[1]), _to_str(vals[2]), _to_float(vals[3])
         d[(c1, c2)] = val
     raise RuntimeError('Bad kern pairs parse')

@@ -6,6 +6,7 @@ Circles, Wedges and Polygons
 This example demonstrates how to use `.collections.PatchCollection`.
 """
 
+
 import numpy as np
 from matplotlib.patches import Circle, Wedge, Polygon
 from matplotlib.collections import PatchCollection
@@ -44,7 +45,7 @@ patches += [
     Wedge((.8, .3), .2, 45, 90, width=0.10),  # Ring sector
 ]
 
-for i in range(N):
+for _ in range(N):
     polygon = Polygon(np.random.rand(N, 2), True)
     patches.append(polygon)
 

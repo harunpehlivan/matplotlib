@@ -348,7 +348,7 @@ def _get_executable_info(name):
             raise ExecutableNotFoundError(str(_ose)) from _ose
         match = re.search(regex, output)
         if match:
-            raw_version = match.group(1)
+            raw_version = match[1]
             version = parse_version(raw_version)
             if min_ver is not None and version < parse_version(min_ver):
                 raise ExecutableNotFoundError(
@@ -370,19 +370,15 @@ def _get_executable_info(name):
                  if sys.platform == "win32" else
                  ["gs"])
         for e in execs:
-            try:
+            with contextlib.suppress(ExecutableNotFoundError):
                 return impl([e, "--version"], "(.*)", "9")
-            except ExecutableNotFoundError:
-                pass
         message = "Failed to find a Ghostscript installation"
         raise ExecutableNotFoundError(message)
     elif name == "inkscape":
-        try:
+        with contextlib.suppress(ExecutableNotFoundError):
             # Try headless option first (needed for Inkscape version < 1.0):
             return impl(["inkscape", "--without-gui", "-V"],
                         "Inkscape ([^ ]*)")
-        except ExecutableNotFoundError:
-            pass  # Suppress exception chaining.
         # If --without-gui is not accepted, we may be using Inkscape >= 1.0 so
         # try without it:
         return impl(["inkscape", "-V"], "Inkscape ([^ ]*)")
@@ -393,14 +389,12 @@ def _get_executable_info(name):
             import winreg
             binpath = ""
             for flag in [0, winreg.KEY_WOW64_32KEY, winreg.KEY_WOW64_64KEY]:
-                try:
+                with contextlib.suppress(OSError):
                     with winreg.OpenKeyEx(
                             winreg.HKEY_LOCAL_MACHINE,
                             r"Software\Imagemagick\Current",
                             0, winreg.KEY_QUERY_VALUE | flag) as hkey:
                         binpath = winreg.QueryValueEx(hkey, "BinPath")[0]
-                except OSError:
-                    pass
             path = None
             if binpath:
                 for name in ["convert.exe", "magick.exe"]:
@@ -425,9 +419,9 @@ def _get_executable_info(name):
         info = impl(["pdftops", "-v"], "^pdftops version (.*)",
                     ignore_exit_code=True)
         if info and not (
-                3 <= info.version.major or
-                # poppler version numbers.
-                parse_version("0.9") <= info.version < parse_version("1.0")):
+            info.version.major >= 3
+            or parse_version("0.9") <= info.version < parse_version("1.0")
+        ):
             raise ExecutableNotFoundError(
                 f"You have pdftops version {info.version} but the minimum "
                 f"version supported by Matplotlib is 3.0")
@@ -642,9 +636,8 @@ class RcParams(MutableMapping, dict):
                     version, name=key, obj_type="rcparam", alternative=alt_key)
                 return
             elif key == 'backend':
-                if val is rcsetup._auto_backend_sentinel:
-                    if 'backend' in self:
-                        return
+                if val is rcsetup._auto_backend_sentinel and 'backend' in self:
+                    return
             try:
                 cval = self.validate[key](val)
             except ValueError as ve:
@@ -690,7 +683,7 @@ class RcParams(MutableMapping, dict):
             repr_split = pprint.pformat(dict(self), indent=1,
                                         width=80 - indent).split('\n')
         repr_indented = ('\n' + ' ' * indent).join(repr_split)
-        return '{}({})'.format(class_name, repr_indented)
+        return f'{class_name}({repr_indented})'
 
     def __str__(self):
         return '\n'.join(map('{0[0]}: {0[1]}'.format, sorted(self.items())))
@@ -979,7 +972,7 @@ def rc(group, **kwargs):
     for g in group:
         for k, v in kwargs.items():
             name = aliases.get(k) or k
-            key = '%s.%s' % (g, name)
+            key = f'{g}.{name}'
             try:
                 rcParams[key] = v
             except KeyError as err:
@@ -1138,10 +1131,7 @@ def use(backend, *, force=True):
     """
     name = validate_backend(backend)
     # don't (prematurely) resolve the "auto" backend setting
-    if rcParams._get_backend_or_none() == name:
-        # Nothing to do if the requested backend is already set
-        pass
-    else:
+    if rcParams._get_backend_or_none() != name:
         # if pyplot is not already imported, do not import it.  Doing
         # so may trigger a `plt.switch_backend` to the _default_ backend
         # before we get a chance to change to the one the user just requested
@@ -1281,14 +1271,11 @@ def _replacer(data, value):
     Either returns ``data[value]`` or passes ``data`` back, converts either to
     a sequence.
     """
-    try:
+    with contextlib.suppress(Exception):
         # if key isn't a string don't bother
         if isinstance(value, str):
             # try to use __getitem__
             value = data[value]
-    except Exception:
-        # key does not exist, silently fall back to key
-        pass
     return sanitize_sequence(value)
 
 

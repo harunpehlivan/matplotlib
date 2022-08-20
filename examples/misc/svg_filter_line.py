@@ -9,6 +9,7 @@ Note that the filtering effects are only effective if your SVG renderer
 support it.
 """
 
+
 import io
 import xml.etree.ElementTree as ET
 
@@ -46,7 +47,7 @@ for l in [l1, l2]:
     shadow.set_transform(transform)
 
     # set the id for a later use
-    shadow.set_gid(l.get_label() + "_shadow")
+    shadow.set_gid(f"{l.get_label()}_shadow")
 
 
 ax.set_xlim(0., 1.)
@@ -76,7 +77,7 @@ tree.insert(0, ET.XML(filter_def))
 
 for l in [l1, l2]:
     # pick up the svg element with given id
-    shadow = xmlid[l.get_label() + "_shadow"]
+    shadow = xmlid[f"{l.get_label()}_shadow"]
     # apply shadow filter
     shadow.set("filter", 'url(#dropshadow)')
 

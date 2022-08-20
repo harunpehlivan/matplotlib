@@ -11,6 +11,7 @@ to use ``from matplotlib.backends.backend_pgf import PdfPages``.
 This version however does not support `.attach_note`.
 """
 
+
 import datetime
 import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
@@ -50,4 +51,4 @@ with PdfPages('multipage_pdf.pdf') as pdf:
     d['Subject'] = 'How to create a multipage pdf file and set its metadata'
     d['Keywords'] = 'PdfPages multipage keywords author title subject'
     d['CreationDate'] = datetime.datetime(2009, 11, 13)
-    d['ModDate'] = datetime.datetime.today()
+    d['ModDate'] = datetime.datetime.now()
