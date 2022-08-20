@@ -17,8 +17,7 @@ def random_walk(num_steps, max_step=0.05):
     """Return a 3D random walk as (num_steps, 3) array."""
     start_pos = np.random.random(3)
     steps = np.random.uniform(-max_step, max_step, size=(num_steps, 3))
-    walk = start_pos + np.cumsum(steps, axis=0)
-    return walk
+    return start_pos + np.cumsum(steps, axis=0)
 
 
 def update_lines(num, walks, lines):
@@ -31,7 +30,7 @@ def update_lines(num, walks, lines):
 
 # Data: 40 random walks as (num_steps, 3) arrays
 num_steps = 30
-walks = [random_walk(num_steps) for index in range(40)]
+walks = [random_walk(num_steps) for _ in range(40)]
 
 # Attaching 3D axis to the figure
 fig = plt.figure()

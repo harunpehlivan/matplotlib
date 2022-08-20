@@ -77,7 +77,7 @@ class DataManager(Gtk.ApplicationWindow):
         for row in self.data:
             # Gtk.ListStore.append is broken in PyGObject, so insert manually.
             it = store.insert(-1)
-            store.set(it, {i: val for i, val in enumerate(row)})
+            store.set(it, dict(enumerate(row)))
         return store
 
 

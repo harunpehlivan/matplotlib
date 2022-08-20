@@ -63,7 +63,7 @@ def check_duplicates():
     text = subprocess.check_output(['git', 'shortlog', '--summary', '--email'])
     lines = text.decode('utf8').split('\n')
     contributors = [line.split('\t', 1)[1].strip() for line in lines if line]
-    emails = [re.match('.*<(.*)>', line).group(1) for line in contributors]
+    emails = [re.match('.*<(.*)>', line)[1] for line in contributors]
     email_counter = Counter(emails)
 
     if email_counter.most_common(1)[0][1] > 1:

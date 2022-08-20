@@ -187,9 +187,9 @@ for x, theta in enumerate(angles):
     ax.plot(x, 1, marker=MarkerStyle('1', 'left', t), **common_style)
 
 ax.text(-0.5, 2, 'Equation marker', **text_style)
+eq = r'$\frac{1}{x}$'
 for x, theta in enumerate(angles):
     t = Affine2D().rotate_deg(theta)
-    eq = r'$\frac{1}{x}$'
     ax.plot(x, 2, marker=MarkerStyle(eq, 'left', t), **common_style)
 
 for x, theta in enumerate(angles):

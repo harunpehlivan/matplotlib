@@ -61,7 +61,7 @@ def record_missing_reference(app, record, node):
     target = node["reftarget"]
     location = get_location(node, app)
 
-    domain_type = "{}:{}".format(domain, typ)
+    domain_type = f"{domain}:{typ}"
 
     record[(domain_type, target)].add(location)
 
@@ -197,9 +197,9 @@ def save_missing_references_handler(app, exc):
     json_path = (Path(app.confdir) /
                  app.config.missing_references_filename)
 
-    references_warnings = getattr(app.env, 'missing_references_warnings', {})
-
     if app.config.missing_references_write_json:
+        references_warnings = getattr(app.env, 'missing_references_warnings', {})
+
         _write_missing_references_json(references_warnings, json_path)
 
 

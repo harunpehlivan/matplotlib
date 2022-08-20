@@ -46,7 +46,7 @@ class MandelbrotDisplay:
         threshold_time = np.zeros((self.height, self.width))
         z = np.zeros(threshold_time.shape, dtype=complex)
         mask = np.ones(threshold_time.shape, dtype=bool)
-        for i in range(self.niter):
+        for _ in range(self.niter):
             z[mask] = z[mask]**self.power + c[mask]
             mask = (np.abs(z) < self.radius)
             threshold_time += mask
@@ -56,7 +56,7 @@ class MandelbrotDisplay:
         ax.set_autoscale_on(False)  # Otherwise, infinite loop
         # Get the number of points from the number of pixels in the window
         self.width, self.height = \
-            np.round(ax.patch.get_window_extent().size).astype(int)
+                np.round(ax.patch.get_window_extent().size).astype(int)
         # Get the range for the new area
         vl = ax.viewLim
         extent = vl.x0, vl.x1, vl.y0, vl.y1

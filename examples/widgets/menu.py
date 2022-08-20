@@ -102,8 +102,8 @@ class Menu:
         width = maxw + 2*MenuItem.padx
         height = maxh + MenuItem.pady
 
+        left = x0
         for item in menuitems:
-            left = x0
             bottom = y0 - maxh - MenuItem.pady
 
             item.set_extent(left, bottom, width, height, depth)
@@ -128,7 +128,7 @@ hoverprops = ItemProperties(labelcolor='white', bgcolor='blue',
 menuitems = []
 for label in ('open', 'close', 'save', 'save as', 'quit'):
     def on_select(item):
-        print('you selected %s' % item.labelstr)
+        print(f'you selected {item.labelstr}')
     item = MenuItem(fig, label, props=props, hoverprops=hoverprops,
                     on_select=on_select)
     menuitems.append(item)

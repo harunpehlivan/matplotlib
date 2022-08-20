@@ -100,8 +100,9 @@ def _check_dependencies():
             missing.append(names[name])
     if missing:
         raise ImportError(
-            "The following dependencies are missing to build the "
-            "documentation: {}".format(", ".join(missing)))
+            f'The following dependencies are missing to build the documentation: {", ".join(missing)}'
+        )
+
     if shutil.which('dot') is None:
         raise OSError(
             "No binary named dot - graphviz must be installed to build the "

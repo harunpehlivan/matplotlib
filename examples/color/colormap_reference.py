@@ -52,7 +52,7 @@ def plot_color_gradients(cmap_category, cmap_list):
     fig, axs = plt.subplots(nrows=nrows, figsize=(6.4, figh))
     fig.subplots_adjust(top=1-.35/figh, bottom=.15/figh, left=0.2, right=0.99)
 
-    axs[0].set_title(cmap_category + ' colormaps', fontsize=14)
+    axs[0].set_title(f'{cmap_category} colormaps', fontsize=14)
 
     for ax, cmap_name in zip(axs, cmap_list):
         ax.imshow(gradient, aspect='auto', cmap=cmap_name)

@@ -8,6 +8,7 @@ global font properties.  For individual character metrics, use the `.Glyph`
 object, as returned by `.load_char`.
 """
 
+
 import os
 
 import matplotlib
@@ -61,4 +62,4 @@ for style in ('Italic',
               'Glyph names',
               'External stream'):
     bitpos = getattr(ft, style.replace(' ', '_').upper()) - 1
-    print(f"{style+':':17}", bool(font.style_flags & (1 << bitpos)))
+    print(f"{f'{style}:':17}", bool(font.style_flags & (1 << bitpos)))

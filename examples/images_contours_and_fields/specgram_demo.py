@@ -5,6 +5,7 @@ Spectrogram Demo
 
 Demo of a spectrogram plot (`~.axes.Axes.specgram`).
 """
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -17,7 +18,7 @@ s1 = np.sin(2 * np.pi * 100 * t)
 s2 = 2 * np.sin(2 * np.pi * 400 * t)
 
 # create a transient "chirp"
-s2[t <= 10] = s2[12 <= t] = 0
+s2[t <= 10] = s2[t >= 12] = 0
 
 # add some noise into the mix
 nse = 0.01 * np.random.random(size=len(t))

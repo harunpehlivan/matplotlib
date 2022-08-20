@@ -986,7 +986,7 @@ XKCD_COLORS = {
     'purple': '#7e1e9c'}
 
 # Normalize name to "xkcd:<name>" to avoid name collisions.
-XKCD_COLORS = {'xkcd:' + name: value for name, value in XKCD_COLORS.items()}
+XKCD_COLORS = {f'xkcd:{name}': value for name, value in XKCD_COLORS.items()}
 
 
 # https://drafts.csswg.org/css-color-4/#named-colors

@@ -44,11 +44,11 @@ subfigs[0].colorbar(pc, shrink=0.6, ax=axsLeft, location='bottom')
 axsRight = subfigs[1].subplots(3, 1, sharex=True)
 for nn, ax in enumerate(axsRight):
     pc = example_plot(ax, hide_labels=True)
-    if nn == 2:
-        ax.set_xlabel('xlabel')
     if nn == 1:
         ax.set_ylabel('ylabel')
 
+    elif nn == 2:
+        ax.set_xlabel('xlabel')
 subfigs[1].set_facecolor('0.85')
 subfigs[1].colorbar(pc, shrink=0.6, ax=axsRight)
 subfigs[1].suptitle('Right plots', fontsize='x-large')
@@ -103,11 +103,11 @@ subfigs[0].colorbar(pc, shrink=0.6, ax=axsLeft, location='bottom')
 axsRight = subfigs[1].subplots(3, 1, sharex=True)
 for nn, ax in enumerate(axsRight):
     pc = example_plot(ax, hide_labels=True)
-    if nn == 2:
-        ax.set_xlabel('xlabel')
     if nn == 1:
         ax.set_ylabel('ylabel')
 
+    elif nn == 2:
+        ax.set_xlabel('xlabel')
 subfigs[1].set_facecolor('0.85')
 subfigs[1].colorbar(pc, shrink=0.6, ax=axsRight)
 subfigs[1].suptitle('Right plots', fontsize='x-large')
@@ -135,7 +135,7 @@ subfigsnest = subfigs[0].subfigures(2, 1, height_ratios=[1, 1.4])
 subfigsnest[0].suptitle('subfigsnest[0]')
 subfigsnest[0].set_facecolor('r')
 axsnest0 = subfigsnest[0].subplots(1, 2, sharey=True)
-for nn, ax in enumerate(axsnest0):
+for ax in axsnest0:
     pc = example_plot(ax, hide_labels=True)
 subfigsnest[0].colorbar(pc, ax=axsnest0)
 

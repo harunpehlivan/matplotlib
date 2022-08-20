@@ -126,7 +126,7 @@ class AngleAnnotation(Arc):
                        xycoords=IdentityTransform(),
                        xytext=(0, 0), textcoords="offset points",
                        annotation_clip=True)
-        self.kw.update(text_kw or {})
+        self.kw |= (text_kw or {})
         self.text = ax.annotate(text, xy=self._center, **self.kw)
 
     def get_size(self):
@@ -191,16 +191,15 @@ class AngleAnnotation(Arc):
             def R90(a, r, w, h):
                 if a < np.arctan(h/2/(r+w/2)):
                     return np.sqrt((r+w/2)**2 + (np.tan(a)*(r+w/2))**2)
-                else:
-                    c = np.sqrt((w/2)**2+(h/2)**2)
-                    T = np.arcsin(c * np.cos(np.pi/2 - a + np.arcsin(h/2/c))/r)
-                    xy = r * np.array([np.cos(a + T), np.sin(a + T)])
-                    xy += np.array([w/2, h/2])
-                    return np.sqrt(np.sum(xy**2))
+                c = np.sqrt((w/2)**2+(h/2)**2)
+                T = np.arcsin(c * np.cos(np.pi/2 - a + np.arcsin(h/2/c))/r)
+                xy = r * np.array([np.cos(a + T), np.sin(a + T)])
+                xy += np.array([w/2, h/2])
+                return np.sqrt(np.sum(xy**2))
 
             def R(a, r, w, h):
                 aa = (a % (np.pi/4))*((a % (np.pi/2)) <= np.pi/4) + \
-                     (np.pi/4 - (a % (np.pi/4)))*((a % (np.pi/2)) >= np.pi/4)
+                         (np.pi/4 - (a % (np.pi/4)))*((a % (np.pi/2)) >= np.pi/4)
                 return R90(aa, r, *[w, h][::int(np.sign(np.cos(2*a)))])
 
             bbox = self.text.get_window_extent()

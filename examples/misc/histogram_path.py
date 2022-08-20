@@ -14,6 +14,7 @@ at the outset, but it should be much faster for large numbers of
 objects.
 """
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -63,7 +64,7 @@ nrects = len(left)
 nverts = nrects*(1+3+1)
 verts = np.zeros((nverts, 2))
 codes = np.ones(nverts, int) * path.Path.LINETO
-codes[0::5] = path.Path.MOVETO
+codes[::5] = path.Path.MOVETO
 codes[4::5] = path.Path.CLOSEPOLY
 verts[0::5, 0] = left
 verts[0::5, 1] = bottom

@@ -27,11 +27,9 @@ fig, ax = plt.subplots()
 # create 3x3 grid to plot the artists
 grid = np.mgrid[0.2:0.8:3j, 0.2:0.8:3j].reshape(2, -1).T
 
-patches = []
-
 # add a circle
 circle = mpatches.Circle(grid[0], 0.1, ec="none")
-patches.append(circle)
+patches = [circle]
 label(grid[0], "Circle")
 
 # add a rectangle

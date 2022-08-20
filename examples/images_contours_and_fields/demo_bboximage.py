@@ -7,6 +7,7 @@ A `~matplotlib.image.BboxImage` can be used to position an image according to
 a bounding box. This demo shows how to show an image inside a `.text.Text`'s
 bounding box as well as how to manually create a bounding box for the image.
 """
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.image import BboxImage
@@ -19,7 +20,7 @@ fig, (ax1, ax2) = plt.subplots(ncols=2)
 # Create a BboxImage with Text
 # ----------------------------
 txt = ax1.text(0.5, 0.5, "test", size=30, ha="center", color="w")
-kwargs = dict()
+kwargs = {}
 
 bbox_image = BboxImage(txt.get_window_extent,
                        norm=None,

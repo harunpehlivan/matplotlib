@@ -14,13 +14,14 @@ can be determined automatically by setting the parameter
 *transform_rotates_text*, as shown in the example below.
 """
 
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 fig, ax = plt.subplots()
 
 # Plot diagonal line (45 degrees)
-h = ax.plot(range(0, 10), range(0, 10))
+h = ax.plot(range(10), range(10))
 
 # set limits so that it no longer looks on screen to be 45 degrees
 ax.set_xlim([-10, 20])

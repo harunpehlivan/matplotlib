@@ -35,7 +35,7 @@ _log = logging.getLogger("matplotlib.mathtext")
 
 
 @_api.delete_parameter("3.6", "math")
-def get_unicode_index(symbol, math=False):  # Publicly exported.
+def get_unicode_index(symbol, math=False):    # Publicly exported.
     r"""
     Return the integer index (from the Unicode table) of *symbol*.
 
@@ -63,8 +63,8 @@ def get_unicode_index(symbol, math=False):  # Publicly exported.
         return tex2uni[symbol.strip("\\")]
     except KeyError as err:
         raise ValueError(
-            "'{}' is not a valid Unicode character or TeX/Type1 symbol"
-            .format(symbol)) from err
+            f"'{symbol}' is not a valid Unicode character or TeX/Type1 symbol"
+        ) from err
 
 
 VectorParse = namedtuple("VectorParse", "width height depth glyphs rects",
@@ -281,10 +281,7 @@ class TruetypeFonts(Fonts):
         self._fonts['regular'] = default_font
 
     def _get_font(self, font):
-        if font in self.fontmap:
-            basename = self.fontmap[font]
-        else:
-            basename = font
+        basename = self.fontmap[font] if font in self.fontmap else font
         cached_font = self._fonts.get(basename)
         if cached_font is None and os.path.exists(basename):
             cached_font = get_font(basename)
@@ -338,8 +335,7 @@ class TruetypeFonts(Fonts):
             metrics = self.get_metrics(
                 fontname, mpl.rcParams['mathtext.default'], 'x', fontsize, dpi)
             return metrics.iceberg
-        xHeight = (pclt['xHeight'] / 64.0) * (fontsize / 12.0) * (dpi / 100.0)
-        return xHeight
+        return (pclt['xHeight'] / 64.0) * (fontsize / 12.0) * (dpi / 100.0)
 
     def get_underline_thickness(self, font, fontsize, dpi):
         # This function used to grab underline thickness from the font
@@ -487,7 +483,7 @@ class UnicodeFonts(TruetypeFonts):
         super().__init__(*args, **kwargs)
         self.fontmap = {}
         for texfont in "cal rm tt it bf sf".split():
-            prop = mpl.rcParams['mathtext.' + texfont]
+            prop = mpl.rcParams[f'mathtext.{texfont}']
             font = findfont(prop)
             self.fontmap[texfont] = font
         prop = FontProperties('cmex10')
@@ -608,19 +604,17 @@ class DejaVuFonts(UnicodeFonts):
             self.fontmap[name] = fullpath
 
     def _get_glyph(self, fontname, font_class, sym):
-        # Override prime symbol to use Bakoma.
         if sym == r'\prime':
             return self.bakoma._get_glyph(fontname, font_class, sym)
-        else:
-            # check whether the glyph is available in the display font
-            uniindex = get_unicode_index(sym)
-            font = self._get_font('ex')
-            if font is not None:
-                glyphindex = font.get_char_index(uniindex)
-                if glyphindex != 0:
-                    return super()._get_glyph('ex', font_class, sym)
-            # otherwise return regular glyph
-            return super()._get_glyph(fontname, font_class, sym)
+        # check whether the glyph is available in the display font
+        uniindex = get_unicode_index(sym)
+        font = self._get_font('ex')
+        if font is not None:
+            glyphindex = font.get_char_index(uniindex)
+            if glyphindex != 0:
+                return super()._get_glyph('ex', font_class, sym)
+        # otherwise return regular glyph
+        return super()._get_glyph(fontname, font_class, sym)
 
 
 class DejaVuSerifFonts(DejaVuFonts):
@@ -739,7 +733,7 @@ class StixFonts(UnicodeFonts):
 
         # Handle private use area glyphs
         if fontname in ('it', 'rm', 'bf') and 0xe000 <= uniindex <= 0xf8ff:
-            fontname = 'nonuni' + fontname
+            fontname = f'nonuni{fontname}'
 
         return fontname, uniindex
 
@@ -993,15 +987,12 @@ class Char(Node):
         self._update_metrics()
 
     def __repr__(self):
-        return '`%s`' % self.c
+        return f'`{self.c}`'
 
     def _update_metrics(self):
         metrics = self._metrics = self.fontset.get_metrics(
             self.font, self.font_class, self.c, self.fontsize, self.dpi)
-        if self.c == ' ':
-            self.width = metrics.advance
-        else:
-            self.width = metrics.width
+        self.width = metrics.advance if self.c == ' ' else metrics.width
         self.height = metrics.iceberg
         self.depth = -(metrics.iceberg - metrics.height)
 
@@ -1090,10 +1081,9 @@ class List(Box):
         else:
             self.glue_sign = 0
             self.glue_ratio = 0.
-        if o == 0:
-            if len(self.children):
-                _log.warning("%s %s: %r",
-                             error_type, type(self).__name__, self)
+        if o == 0 and len(self.children):
+            _log.warning("%s %s: %r",
+                         error_type, type(self).__name__, self)
 
     def shrink(self):
         for child in self.children:
@@ -1122,15 +1112,10 @@ class Hlist(List):
         linked list.
         """
         new_children = []
-        num_children = len(self.children)
-        if num_children:
+        if num_children := len(self.children):
             for i in range(num_children):
                 elem = self.children[i]
-                if i < num_children - 1:
-                    next = self.children[i + 1]
-                else:
-                    next = None
-
+                next = self.children[i + 1] if i < num_children - 1 else None
                 new_children.append(elem)
                 kerning_distance = elem.get_kerning(next)
                 if kerning_distance != 0.:
@@ -2079,8 +2064,7 @@ class Parser:
         try:
             char = Char(c, self.get_state())
         except ValueError as err:
-            raise ParseFatalException(s, loc,
-                                      "Unknown symbol: %s" % c) from err
+            raise ParseFatalException(s, loc, f"Unknown symbol: {c}") from err
 
         if c in self._spaced_symbols:
             # iterate until we find previous character, needed for cases
@@ -2101,9 +2085,8 @@ class Parser:
             next_char = next((c for c in s[loc + 1:] if c != ' '), '')
 
             # Do not space commas between brackets
-            if c == ',':
-                if prev_char == '{' and next_char == '}':
-                    return [char]
+            if c == ',' and prev_char == '{' and next_char == '}':
+                return [char]
 
             # Do not space dots as decimal separators
             if c == '.' and prev_char.isdigit() and next_char.isdigit():
@@ -2194,11 +2177,7 @@ class Parser:
         self.pop_state()
         # if followed by a super/subscript, set flag to true
         # This flag tells subsuper to add space after this operator
-        if next_char in {'^', '_'}:
-            self._in_subscript_or_superscript = True
-        else:
-            self._in_subscript_or_superscript = False
-
+        self._in_subscript_or_superscript = next_char in {'^', '_'}
         return Hlist(hlist_list)
 
     def start_group(self, s, loc, toks):
@@ -2238,9 +2217,7 @@ class Parser:
         return False
 
     def is_slanted(self, nucleus):
-        if isinstance(nucleus, Char):
-            return nucleus.is_slanted()
-        return False
+        return nucleus.is_slanted() if isinstance(nucleus, Char) else False
 
     def is_between_brackets(self, s, loc):
         return False

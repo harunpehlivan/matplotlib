@@ -14,10 +14,7 @@ import matplotlib.pyplot as plt
 
 
 def wise(v):
-    if v == 1:
-        return "CCW"
-    else:
-        return "CW"
+    return "CCW" if v == 1 else "CW"
 
 
 def make_circle(r):

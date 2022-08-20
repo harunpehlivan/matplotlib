@@ -77,7 +77,7 @@ def draw_font_table(path):
 
     labelc = ["{:X}".format(i) for i in range(16)]
     labelr = ["{:02X}".format(16 * i) for i in range(16)]
-    chars = [["" for c in range(16)] for r in range(16)]
+    chars = [["" for _ in range(16)] for _ in range(16)]
 
     for char_code, glyph_index in codes:
         if char_code >= 256:
@@ -95,10 +95,11 @@ def draw_font_table(path):
         colLabels=labelc,
         rowColours=["palegreen"] * 16,
         colColours=["palegreen"] * 16,
-        cellColours=[[".95" for c in range(16)] for r in range(16)],
+        cellColours=[[".95" for _ in range(16)] for _ in range(16)],
         cellLoc='center',
         loc='upper left',
     )
+
     for key, cell in table.get_celld().items():
         row, col = key
         if row > 0 and col > -1:  # Beware of table's idiosyncratic indexing...

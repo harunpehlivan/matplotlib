@@ -14,6 +14,7 @@ These settings were shamelessly stolen from [1]_ (with permission).
 .. _R: https://www.r-project.org/
 
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -48,7 +49,7 @@ ax3.bar(x + width, y2, width,
 ax3.set_xticks(x + width, labels=['a', 'b', 'c', 'd', 'e'])
 
 # circles with colors from default color cycle
-for i, color in enumerate(plt.rcParams['axes.prop_cycle']):
+for color in plt.rcParams['axes.prop_cycle']:
     xy = np.random.normal(size=2)
     ax4.add_patch(plt.Circle(xy, radius=0.3, color=color['color']))
 ax4.axis('equal')

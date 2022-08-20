@@ -112,7 +112,7 @@ def run(state_machine):
     for category, columns, syms in symbols:
         syms = sorted(syms.split())
         columns = min(columns, len(syms))
-        lines.append("**%s**" % category)
+        lines.append(f"**{category}**")
         lines.append('')
         max_width = max(map(len, syms)) * 2 + 16
         header = "    " + (('=' * max_width) + ' ') * columns
@@ -143,8 +143,7 @@ class MathSymbolTableDirective(Directive):
 def setup(app):
     app.add_directive("math_symbol_table", MathSymbolTableDirective)
 
-    metadata = {'parallel_read_safe': True, 'parallel_write_safe': True}
-    return metadata
+    return {'parallel_read_safe': True, 'parallel_write_safe': True}
 
 
 if __name__ == "__main__":

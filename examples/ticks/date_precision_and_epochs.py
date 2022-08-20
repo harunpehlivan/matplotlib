@@ -73,7 +73,7 @@ print('After Roundtrip:  ', date2)
 try:
     mdates.set_epoch(new_epoch)  # this is the new MPL 3.3 default.
 except RuntimeError as e:
-    print('RuntimeError:', str(e))
+    print('RuntimeError:', e)
 
 #############################################################################
 # For this tutorial, we reset the sentinel using a private method, but users
@@ -130,7 +130,7 @@ mdates.set_epoch(new_epoch)
 
 fig, ax = plt.subplots(constrained_layout=True)
 ax.plot(xold, y)
-ax.set_title('Epoch: ' + mdates.get_epoch())
+ax.set_title(f'Epoch: {mdates.get_epoch()}')
 ax.xaxis.set_tick_params(rotation=40)
 plt.show()
 
@@ -139,7 +139,7 @@ plt.show()
 
 fig, ax = plt.subplots(constrained_layout=True)
 ax.plot(x, y)
-ax.set_title('Epoch: ' + mdates.get_epoch())
+ax.set_title(f'Epoch: {mdates.get_epoch()}')
 ax.xaxis.set_tick_params(rotation=40)
 plt.show()
 

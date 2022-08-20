@@ -59,7 +59,7 @@ def rainbow_text(x, y, strings, colors, orientation='horizontal',
         kwargs.update(rotation=90, verticalalignment='bottom')
 
     for s, c in zip(strings, colors):
-        text = ax.text(x, y, s + " ", color=c, transform=t, **kwargs)
+        text = ax.text(x, y, f"{s} ", color=c, transform=t, **kwargs)
 
         # Need to draw to update the text position.
         text.draw(canvas.get_renderer())

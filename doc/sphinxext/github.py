@@ -48,10 +48,10 @@ def make_link_node(rawtext, app, type, slug, options):
     set_classes(options)
     prefix = "#"
     if type == 'pull':
-        prefix = "PR " + prefix
-    node = nodes.reference(rawtext, prefix + utils.unescape(slug), refuri=ref,
-                           **options)
-    return node
+        prefix = f"PR {prefix}"
+    return nodes.reference(
+        rawtext, prefix + utils.unescape(slug), refuri=ref, **options
+    )
 
 
 def ghissue_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
@@ -112,7 +112,7 @@ def ghuser_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
     :param options: Directive options for customization.
     :param content: The directive content for customization.
     """
-    ref = 'https://www.github.com/' + text
+    ref = f'https://www.github.com/{text}'
     node = nodes.reference(rawtext, text, refuri=ref, **options)
     return [node], []
 
@@ -163,5 +163,4 @@ def setup(app):
     app.add_role('ghcommit', ghcommit_role)
     app.add_config_value('github_project_url', None, 'env')
 
-    metadata = {'parallel_read_safe': True, 'parallel_write_safe': True}
-    return metadata
+    return {'parallel_read_safe': True, 'parallel_write_safe': True}

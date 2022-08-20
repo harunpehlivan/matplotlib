@@ -140,10 +140,7 @@ class BuildExtraLibraries(setuptools.command.build_ext.build_ext):
                 if 'gcc' in version:
                     ranlib = shutil.which('gcc-ranlib')
                 elif 'clang' in version:
-                    if sys.platform == 'darwin':
-                        ranlib = True
-                    else:
-                        ranlib = shutil.which('llvm-ranlib')
+                    ranlib = True if sys.platform == 'darwin' else shutil.which('llvm-ranlib')
         if ranlib and has_flag(self.compiler, '-flto'):
             for ext in self.extensions:
                 ext.extra_compile_args.append('-flto')
@@ -199,9 +196,11 @@ def update_matplotlibrc(path):
         idx for idx, line in enumerate(template_lines)
         if "#backend:" in line]
     template_lines[backend_line_idx] = (
-        "#backend: {}\n".format(setupext.options["backend"])
+        f'#backend: {setupext.options["backend"]}\n'
         if setupext.options["backend"]
-        else "##backend: Agg\n")
+        else "##backend: Agg\n"
+    )
+
     path.write_text("".join(template_lines), encoding="utf-8")
 
 
@@ -223,9 +222,13 @@ package_data = {}  # Will be filled below by the various components.
 
 # If the user just queries for information, don't bother figuring out which
 # packages to build or install.
-if not (any('--' + opt in sys.argv
-            for opt in Distribution.display_option_names + ['help'])
-        or 'clean' in sys.argv):
+if (
+    all(
+        f'--{opt}' not in sys.argv
+        for opt in Distribution.display_option_names + ['help']
+    )
+    and 'clean' not in sys.argv
+):
     # Go through all of the packages and figure out which ones we are
     # going to build/install.
     print_raw()
@@ -257,7 +260,7 @@ if not (any('--' + opt in sys.argv
             package_data.setdefault(key, [])
             package_data[key] = list(set(val + package_data[key]))
 
-setup(  # Finally, pass this all along to setuptools to do the heavy lifting.
+setup(
     name="matplotlib",
     description="Python plotting package",
     author="John D. Hunter, Michael Droettboom",
@@ -269,7 +272,7 @@ setup(  # Finally, pass this all along to setuptools to do the heavy lifting.
         'Source Code': 'https://github.com/matplotlib/matplotlib',
         'Bug Tracker': 'https://github.com/matplotlib/matplotlib/issues',
         'Forum': 'https://discourse.matplotlib.org/',
-        'Donate': 'https://numfocus.org/donate-to-matplotlib'
+        'Donate': 'https://numfocus.org/donate-to-matplotlib',
     },
     long_description=Path("README.rst").read_text(encoding="utf-8"),
     long_description_content_type="text/x-rst",
@@ -288,17 +291,13 @@ setup(  # Finally, pass this all along to setuptools to do the heavy lifting.
         'Programming Language :: Python :: 3.10',
         'Topic :: Scientific/Engineering :: Visualization',
     ],
-
     package_dir={"": "lib"},
     packages=find_packages("lib"),
     namespace_packages=["mpl_toolkits"],
     py_modules=["pylab"],
-    # Dummy extension to trigger build_ext, which will swap it out with
-    # real extensions that can depend on numpy for the build.
     ext_modules=[Extension("", [])],
     package_data=package_data,
-
-    python_requires='>={}'.format('.'.join(str(n) for n in py_min_version)),
+    python_requires=f">={'.'.join(str(n) for n in py_min_version)}",
     setup_requires=[
         "certifi>=2020.06.20",
         "numpy>=1.19",
@@ -314,12 +313,15 @@ setup(  # Finally, pass this all along to setuptools to do the heavy lifting.
         "pillow>=6.2.0",
         "pyparsing>=2.2.1",
         "python-dateutil>=2.7",
-    ] + (
+    ]
+    + (
         # Installing from a git checkout that is not producing a wheel.
-        ["setuptools_scm>=7"] if (
-            Path(__file__).with_name(".git").exists() and
-            os.environ.get("CIBUILDWHEEL", "0") != "1"
-        ) else []
+        ["setuptools_scm>=7"]
+        if (
+            Path(__file__).with_name(".git").exists()
+            and os.environ.get("CIBUILDWHEEL", "0") != "1"
+        )
+        else []
     ),
     use_scm_version={
         "version_scheme": "release-branch-semver",
